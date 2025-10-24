@@ -163,14 +163,17 @@
         </div>
 
         <!-- TAB 1: User-Based CF -->
+
         <div id="tab1" class="tab-content">
             <h2>User-Based Collaborative Filtering (Pearson Correlation)</h2>
-            <form method="get">
-                <label for="user_id">Select User:</label>
-                <select name="user_id" onchange="this.form.submit()">
-                    {% for user in users %}
-                    <option value="{{ user }}" {% if user==selected_user %}selected{% endif %}>User {{ user }}</option>
-                    {% endfor %}
+            <p><em>Predicted movie ratings for multiple users (top 10 users × 5 movies each)</em></p>
+
+            <form method="get" id="cfForm">
+                <label for="cf_per_page">Rows per page:</label>
+                <select name="cf_per_page" onchange="document.getElementById('cfForm').submit()">
+                    <option value="100" {% if cf_per_page==100 %}selected{% endif %}>100</option>
+                    <option value="200" {% if cf_per_page==200 %}selected{% endif %}>200</option>
+                    <option value="500" {% if cf_per_page==500 %}selected{% endif %}>500</option>
                 </select>
                 <input type="hidden" name="tab" value="tab1">
             </form>
@@ -179,23 +182,42 @@
             <table>
                 <thead>
                     <tr>
+                        <th>User</th>
                         <th>Movie ID</th>
                         <th>Predicted Rating</th>
+                        <th>Most Similar User</th>
+                        <th>Similarity</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for row in predictions %}
+                    {% for p in predictions %}
                     <tr>
-                        <td>{{ row.movieId }}</td>
-                        <td>{{ row.predicted_rating }}</td>
+                        <td>{{ p.userId }}</td>
+                        <td>{{ p.movieId }}</td>
+                        <td>{{ p.predicted_rating }}</td>
+                        <td>{{ p.similar_user }}</td>
+                        <td>{{ p.similarity }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+
+            <div style="margin-top:10px;text-align:center;">
+                {% if cf_page > 1 %}
+                <a href="?cf_page={{ cf_page-1 }}&cf_per_page={{ cf_per_page }}&tab=tab1">Previous</a>
+                {% endif %}
+                <span> Page {{ cf_page }} of {{ cf_total_pages }} </span>
+                {% if cf_page < cf_total_pages %} <a
+                    href="?cf_page={{ cf_page+1 }}&cf_per_page={{ cf_per_page }}&tab=tab1">Next</a>
+                    {% endif %}
+            </div>
+
             {% else %}
-            <p style="color: red;">No predictions available.</p>
+            <p style="color:red;">No predictions available.</p>
             {% endif %}
         </div>
+
+
 
 
         <!-- TAB 2: User Similarities -->

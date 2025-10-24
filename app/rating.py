@@ -8,12 +8,12 @@ main_bp = Blueprint("main", __name__)
 
 @main_bp.route('/', methods=['GET', 'POST'])
 def index():
-    # ------------------- Load Dataset -------------------
+    # ---------- Load dataset ----------
     file_path = os.path.join(os.path.dirname(__file__), '..', 'app', 'data', 'smallest-100k', 'ratings.csv')
     file_path = os.path.abspath(file_path)
     ratings = pd.read_csv(file_path)
 
-    # ------------------- Dataset Tab Pagination -------------------
+    # ---------- Dataset tab pagination ----------
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 100))
     per_page = per_page if per_page in [100, 200, 500] else 100
@@ -24,74 +24,91 @@ def index():
     end = start + per_page
     dataset_page = ratings.iloc[start:end].to_dict(orient='records')
 
-    # ------------------- Prepare Rating Matrix -------------------
-    rating_matrix = ratings.pivot(index='userId', columns='movieId', values='rating')
-
-    # ------------------- Pearson Similarity Function -------------------
-    def pearson_similarity(user1, user2):
-        """Compute Pearson correlation between two users"""
-        common = rating_matrix.loc[[user1, user2]].dropna(axis=1, how='any')
-        if common.shape[1] == 0:
-            return 0
-        u1 = common.loc[user1]
-        u2 = common.loc[user2]
-        if np.std(u1) == 0 or np.std(u2) == 0:
-            return 0
-        return np.corrcoef(u1, u2)[0, 1]
-
-    # ------------------- Prediction Function -------------------
-    def predict_rating(user_id, movie_id, k=5):
-        """Predict rating of a movie for a user using top-k similar users"""
-        if movie_id not in rating_matrix.columns:
-            return np.nan
-
-        users_who_rated = rating_matrix[movie_id].dropna().index
-        sims = []
-        for other_user in users_who_rated:
-            if other_user != user_id:
-                sim = pearson_similarity(user_id, other_user)
-                if sim > 0: 
-                    sims.append((other_user, sim))
-
-        sims = sorted(sims, key=lambda x: x[1], reverse=True)[:k]
-
-        if not sims:
-            return rating_matrix.loc[user_id].mean()  
-
-        user_mean = rating_matrix.loc[user_id].mean()
-        numerator, denominator = 0, 0
-        for other_user, sim in sims:
-            other_mean = rating_matrix.loc[other_user].mean()
-            numerator += sim * (rating_matrix.loc[other_user, movie_id] - other_mean)
-            denominator += abs(sim)
-
-        if denominator == 0:
-            return user_mean
-        return round(user_mean + numerator / denominator, 2)
-
-    # ------------------- Handle User Selection -------------------
+    # ---------- User-Based CF ----------
+    rating_matrix = ratings.pivot_table(index='userId', columns='movieId', values='rating')
     users = rating_matrix.index.tolist()
-    selected_user = int(request.args.get('user_id', users[0]))
 
-    user_ratings = rating_matrix.loc[selected_user]
-    unrated_movies = user_ratings[user_ratings.isna()].index.tolist()
+    def pearson_similarity(u1, u2):
+        """Compute Pearson correlation between two users"""
+        u1_ratings = rating_matrix.loc[u1]
+        u2_ratings = rating_matrix.loc[u2]
+        common = u1_ratings.notna() & u2_ratings.notna()
+        if not common.any():
+            return 0
+        u1_common = u1_ratings[common]
+        u2_common = u2_ratings[common]
+        if len(u1_common) < 2:
+            return 0
+        sim = np.corrcoef(u1_common, u2_common)[0, 1]
+        return 0 if np.isnan(sim) else sim
 
-    predictions = []
-    for movie_id in unrated_movies[:50]: 
-        predicted = predict_rating(selected_user, movie_id)
-        predictions.append({'movieId': movie_id, 'predicted_rating': predicted})
+    all_predictions = []
 
-    predictions = sorted(predictions, key=lambda x: x['predicted_rating'], reverse=True)
+    # loop over all users (limit for performance)
+    for selected_user in users[:10]:
+        similarities = []
+        for other_user in users:
+            if other_user != selected_user:
+                sim = pearson_similarity(selected_user, other_user)
+                similarities.append({'user': other_user, 'similarity': round(sim, 3)})
 
-    # ------------------- Render Template -------------------
-    return render_template("index.html",
-                           # Tab 0 (Dataset)
-                           row_count=row_count,
-                           data=dataset_page,
-                           page=page,
-                           total_pages=total_pages,
-                           per_page=per_page,
-                           # Tab 1 (User-based CF)
-                           users=users,
-                           selected_user=selected_user,
-                           predictions=predictions)
+        similarities_df = pd.DataFrame(similarities).sort_values(by='similarity', ascending=False)
+
+        def predict_rating(target_user, movie_id):
+            numerator, denominator = 0, 0
+            target_mean = rating_matrix.loc[target_user].mean()
+            contributors = []
+            for _, row in similarities_df.iterrows():
+                other_user = row['user']
+                sim = row['similarity']
+                if sim <= 0:
+                    continue
+                if not np.isnan(rating_matrix.loc[other_user, movie_id]):
+                    other_mean = rating_matrix.loc[other_user].mean()
+                    diff = rating_matrix.loc[other_user, movie_id] - other_mean
+                    numerator += sim * diff
+                    denominator += abs(sim)
+                    contributors.append((other_user, sim))
+
+            if denominator == 0:
+                return np.nan, []
+
+            pred_rating = target_mean + numerator / denominator
+            top_contributor = max(contributors, key=lambda x: x[1]) if contributors else (None, 0)
+            return pred_rating, top_contributor
+
+        unrated_movies = rating_matrix.loc[selected_user][rating_matrix.loc[selected_user].isna()].index.tolist()
+        for movie_id in unrated_movies[:5]:
+            pred, top_user = predict_rating(selected_user, movie_id)
+            all_predictions.append({
+                'userId': selected_user,
+                'movieId': movie_id,
+                'predicted_rating': round(pred, 2) if not np.isnan(pred) else 'N/A',
+                'similar_user': f'User {top_user[0]}' if top_user[0] else 'N/A',
+                'similarity': round(top_user[1], 3) if top_user[1] else 'N/A'
+            })
+
+    # ---------- CF pagination ----------
+    cf_page = int(request.args.get('cf_page', 1))
+    cf_per_page = int(request.args.get('cf_per_page', 100))
+    cf_per_page = cf_per_page if cf_per_page in [100, 200, 500] else 100
+    cf_total = len(all_predictions)
+    cf_total_pages = math.ceil(cf_total / cf_per_page) if cf_total > 0 else 1
+    cf_start = (cf_page - 1) * cf_per_page
+    cf_end = cf_start + cf_per_page
+    predictions_page = all_predictions[cf_start:cf_end]
+
+    return render_template(
+        "index.html",
+        # Dataset tab
+        row_count=row_count,
+        data=dataset_page,
+        page=page,
+        total_pages=total_pages,
+        per_page=per_page,
+        # CF tab (always defined)
+        predictions=predictions_page,
+        cf_page=cf_page,
+        cf_total_pages=cf_total_pages,
+        cf_per_page=cf_per_page,
+    )
