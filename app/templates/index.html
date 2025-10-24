@@ -120,7 +120,7 @@
         <div class="tab-buttons">
             <button class="tab-btn active" data-tab="tab0">Dataset</button>
             <button class="tab-btn" data-tab="tab1">User-Based CF</button>
-            <button class="tab-btn" data-tab="tab2">User Similarities</button>
+            <button class="tab-btn" data-tab="tab2">New Similarity</button>
             <button class="tab-btn" data-tab="tab3">Extra</button>
         </div>
 
@@ -222,9 +222,33 @@
 
         <!-- TAB 2: User Similarities -->
         <div id="tab2" class="tab-content">
-            <h2>User Similarities</h2>
-            <p>Placeholder for Pearson similarity matrix or top-N similar users.</p>
+            <h2>User Similarities (Top 20 Users)</h2>
+            {% if user_similarities and user_similarities|length > 0 %}
+            <table>
+                <thead>
+                    <tr>
+                        {% for key in user_similarities[0].keys() %}
+                        <th>{{ key }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in user_similarities %}
+                    <tr>
+                        {% for value in row.values() %}
+                        <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No similarity data available.</p>
+            {% endif %}
         </div>
+
+
+
 
         <!-- TAB 3: Extra -->
         <div id="tab3" class="tab-content">

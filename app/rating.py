@@ -28,6 +28,7 @@ def index():
     rating_matrix = ratings.pivot_table(index='userId', columns='movieId', values='rating')
     users = rating_matrix.index.tolist()
 
+    # ---------- Similarity functions ----------
     def pearson_similarity(u1, u2):
         """Compute Pearson correlation between two users"""
         u1_ratings = rating_matrix.loc[u1]
@@ -42,14 +43,35 @@ def index():
         sim = np.corrcoef(u1_common, u2_common)[0, 1]
         return 0 if np.isnan(sim) else sim
 
+    def cosine_similarity(u1, u2):
+        """Compute Cosine similarity between two users"""
+        u1_ratings = rating_matrix.loc[u1]
+        u2_ratings = rating_matrix.loc[u2]
+        common_mask = u1_ratings.notna() & u2_ratings.notna()
+        if not common_mask.any():
+            return 0
+        u1_common = u1_ratings[common_mask].values
+        u2_common = u2_ratings[common_mask].values
+        numerator = np.dot(u1_common, u2_common)
+        denominator = np.linalg.norm(u1_common) * np.linalg.norm(u2_common)
+        if denominator == 0:
+            return 0
+        return numerator / denominator
+
+    # Choose similarity method: "pearson" or "cosine"
+    similarity_method = "pearson"  # change to "cosine" if desired
+
     all_predictions = []
 
-    # loop over all users (limit for performance)
+    # loop over top 10 users
     for selected_user in users[:10]:
         similarities = []
         for other_user in users:
             if other_user != selected_user:
-                sim = pearson_similarity(selected_user, other_user)
+                if similarity_method == "pearson":
+                    sim = pearson_similarity(selected_user, other_user)
+                else:
+                    sim = cosine_similarity(selected_user, other_user)
                 similarities.append({'user': other_user, 'similarity': round(sim, 3)})
 
         similarities_df = pd.DataFrame(similarities).sort_values(by='similarity', ascending=False)
@@ -97,6 +119,27 @@ def index():
     cf_start = (cf_page - 1) * cf_per_page
     cf_end = cf_start + cf_per_page
     predictions_page = all_predictions[cf_start:cf_end]
+    
+
+
+    # ---------- User Similarity Matrix for Tab 2 ----------
+    top_users = users[:20]  # first 20 users
+    
+    similarity_matrix = pd.DataFrame(index=top_users, columns=top_users, dtype=float)
+
+    for u1 in top_users:
+        for u2 in top_users:
+            if u1 == u2:
+                similarity_matrix.loc[u1, u2] = 1.0
+            else:
+                similarity_matrix.loc[u1, u2] = pearson_similarity(u1, u2)
+            print(f"Similarity between User {u1} and User {u2}: {similarity_matrix.loc[u1, u2]}")
+
+    # Convert to list of dicts for Jinja rendering
+    user_similarities = similarity_matrix.reset_index().rename(columns={'index': 'User'}).fillna(0).to_dict(orient='records')
+
+    print(f"Similarities for User {user_similarities}:")
+
 
     return render_template(
         "index.html",
@@ -106,9 +149,11 @@ def index():
         page=page,
         total_pages=total_pages,
         per_page=per_page,
-        # CF tab (always defined)
+        # CF tab
         predictions=predictions_page,
         cf_page=cf_page,
         cf_total_pages=cf_total_pages,
         cf_per_page=cf_per_page,
+        # User similarity tab
+        user_similarities=user_similarities,
     )
