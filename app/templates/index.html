@@ -122,6 +122,8 @@
             <button class="tab-btn" data-tab="tab1">User-Based CF</button>
             <button class="tab-btn" data-tab="tab2">New Similarity</button>
             <button class="tab-btn" data-tab="tab3">Average Method/ Misery Method </button>
+            <button class="tab-btn" data-tab="tab4">Disagreement-Aware</button>
+
         </div>
 
         <!-- TAB 0: Dataset -->
@@ -350,6 +352,39 @@
             <p style="color:red;">No group recommendations (least misery method).</p>
             {% endif %}
         </div>
+        <div id="tab4" class="tabcontent">
+            <h2>Disagreement-Aware Group Recommendations</h2>
+
+            <p><strong>Idea:</strong> Combine group fairness with disagreement penalty.<br>
+                <code>GroupScore = AverageRating - α × Variance</code> (α = 0.7)
+            </p>
+
+            <p><strong>Total Predictions Computed:</strong> {{ total_predictions }}</p>
+
+            {% if top_disagreement_recs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Movie ID</th>
+                        <th>Adjusted Group Score</th>
+                        <th>Disagreement (Variance)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in top_disagreement_recs %}
+                    <tr>
+                        <td>{{ rec.movieId }}</td>
+                        <td>{{ rec.group_score|round(2) }}</td>
+                        <td>{{ rec.disagreement|round(3) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color:red;">No disagreement-aware group recommendations available.</p>
+            {% endif %}
+        </div>
+
 
 
 

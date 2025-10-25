@@ -145,6 +145,37 @@ def index():
         print("⚠️ No predictions generated. Try adjusting similarity threshold or data sample.")
 
 
+
+
+    # ---------- Disagreement-Aware Group Recommendation ----------
+    # Compute variance (disagreement) across group members
+    disagreement_df = (
+        group_preds.groupby('movieId')['predicted_rating']
+        .var()
+        .reset_index()
+        .rename(columns={'predicted_rating': 'disagreement'})
+    )
+
+    # Merge with average ratings
+    disagreement_aware = pd.merge(avg_group_recs, disagreement_df, on='movieId', how='left')
+
+    # Fill missing disagreements (e.g. only one user rated)
+    disagreement_aware['disagreement'] = disagreement_aware['disagreement'].fillna(0)
+
+    # Define alpha (penalty factor)
+    alpha = 0.7
+
+    # Compute disagreement-aware score
+    disagreement_aware['group_score'] = (
+        disagreement_aware['predicted_rating'] - alpha * disagreement_aware['disagreement']
+    )
+
+    # Sort by the new score
+    disagreement_aware = disagreement_aware.sort_values(by='group_score', ascending=False)
+
+    # Take top 10 movies
+    top_disagreement_recs = disagreement_aware.head(10).to_dict(orient='records')
+
     return render_template(
         "index.html",
         # Dataset tab
@@ -165,5 +196,6 @@ def index():
         top_avg_recs=top_avg_recs,
         top_misery_recs=top_misery_recs,
         total_predictions=len(all_predictions),
+        top_disagreement_recs=top_disagreement_recs,
 
     )
