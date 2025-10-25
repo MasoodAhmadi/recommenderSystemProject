@@ -43,7 +43,7 @@ Make sure you are in the root folder of the project (where app.py is located), t
 flask --app app.py run
 
 ### 1. Clone the Repository
+
 ```bash
-git clone https://github.com/your-username/recommenderSystem.git
+git clone git@github.com:MasoodAhmadi/recommenderSystemProject.git
 cd recommenderSystem
-```
