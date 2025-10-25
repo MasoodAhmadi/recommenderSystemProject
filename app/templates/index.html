@@ -121,7 +121,7 @@
             <button class="tab-btn active" data-tab="tab0">Dataset</button>
             <button class="tab-btn" data-tab="tab1">User-Based CF</button>
             <button class="tab-btn" data-tab="tab2">New Similarity</button>
-            <button class="tab-btn" data-tab="tab3">Extra</button>
+            <button class="tab-btn" data-tab="tab3">Average Method/ Misery Method </button>
         </div>
 
         <!-- TAB 0: Dataset -->
@@ -251,10 +251,107 @@
 
 
         <!-- TAB 3: Extra -->
+        <!-- TAB 3: Group Recommendations -->
         <div id="tab3" class="tab-content">
-            <h2>Extra</h2>
-            <p>Placeholder for additional functionality.</p>
+            <h2>Group Recommendations</h2>
+            <p><strong>Group members:</strong> First 5 users in the dataset</p>
+
+            <h3>Average Method (Equal Weight)</h3>
+            {% if top_avg_recs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Movie ID</th>
+                        <th>Group Rating (Average)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in top_avg_recs %}
+                    <tr>
+                        <td>{{ rec.movieId }}</td>
+                        <td>{{ rec.predicted_rating|round(2) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color:red;">No group recommendations (average method).</p>
+            {% endif %}
+
+            <h3>Least Misery Method (Veto)</h3>
+            {% if top_misery_recs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Movie ID</th>
+                        <th>Group Rating (Least Misery)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in top_misery_recs %}
+                    <tr>
+                        <td>{{ rec.movieId }}</td>
+                        <td>{{ rec.predicted_rating|round(2) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color:red;">No group recommendations (least misery method).</p>
+            {% endif %}
+        </div><!-- TAB 3: Group Recommendations -->
+        <div id="tab3" class="tab-content">
+            <h2>Group Recommendations</h2>
+            <p><strong>Group members:</strong> First 5 users in the dataset</p>
+
+            <p><strong>Total predictions computed:</strong> {{ total_predictions }}</p>
+
+            <h3>Average Method (Equal Weight)</h3>
+            {% if top_avg_recs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Movie ID</th>
+                        <th>Average Predicted Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in top_avg_recs %}
+                    <tr>
+                        <td>{{ rec.movieId }}</td>
+                        <td>{{ rec.predicted_rating|round(2) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color:red;">No group recommendations (average method).</p>
+            {% endif %}
+
+            <h3>Least Misery Method (Veto)</h3>
+            {% if top_misery_recs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Movie ID</th>
+                        <th>Least Misery Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in top_misery_recs %}
+                    <tr>
+                        <td>{{ rec.movieId }}</td>
+                        <td>{{ rec.predicted_rating|round(2) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color:red;">No group recommendations (least misery method).</p>
+            {% endif %}
         </div>
+
+
 
     </div>
 
