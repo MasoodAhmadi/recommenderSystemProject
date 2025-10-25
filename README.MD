@@ -45,7 +45,7 @@ flask --app app.py run
 ### 1. Clone the Repository
 
 
-```bash
+
 git clone git@github.com:MasoodAhmadi/recommenderSystemProject.git
 cd recommenderSystem
 ```
