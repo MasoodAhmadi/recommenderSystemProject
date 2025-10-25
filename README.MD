@@ -4,6 +4,24 @@ Welcome to the **Recommender System Course**! This project work part 1 is built 
 
 ---
 
+## 🛠️ Installation and Setup
+
+Follow these steps to set up the project on your local machine:
+
+Make sure you are in the root folder of the project (where app.py is located), then start the Flask application using the following command:
+
+```bash
+flask --app app.py run
+```
+
+### 1. Clone the Repository
+
+```bash
+git clone git@github.com:MasoodAhmadi/recommenderSystemProject.git
+cd recommenderSystem
+```
+---
+
 ## 🌟 Features
 
 1. **Dataset Viewer**  
@@ -31,21 +49,3 @@ Welcome to the **Recommender System Course**! This project work part 1 is built 
 
    ![Disagreement-Aware Recommendations](./app/images//F.png)
 
----
-
-## 🛠️ Installation and Setup
-
-Follow these steps to set up the project on your local machine:
-
-Make sure you are in the root folder of the project (where app.py is located), then start the Flask application using the following command:
-
-```bash
-flask --app app.py run
-
-### 1. Clone the Repository
-
-
-
-git clone git@github.com:MasoodAhmadi/recommenderSystemProject.git
-cd recommenderSystem
-```
