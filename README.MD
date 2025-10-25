@@ -9,27 +9,27 @@ Welcome to the **Recommender System Course**! This project work part 1 is built 
 1. **Dataset Viewer**  
    View and explore the MovieLens dataset with pagination support.
 
-   ![Dataset Viewer](images/A.png)
+   ![Dataset Viewer](./app/images/A.png)
 
 2. **User-Based Collaborative Filtering**  
    Generate personalized recommendations using Pearson or Cosine similarity.
 
-   ![User-Based CF](images/BC.png)
+   ![User-Based CF](./app/images//BC.png)
 
 3. **User Similarity Matrix**  
    Visualize the similarity between users based on their ratings.
 
-   ![User Similarity Matrix](images/D.png)
+   ![User Similarity Matrix](./app/images//D.png)
 
 4. **Group Recommendations**  
    Explore group-based recommendations using the Average and Least Misery methods.
 
-   ![Group Recommendations](images/E.png)
+   ![Group Recommendations](./app/images//E.png)
 
 5. **Disagreement-Aware Recommendations**  
    Incorporate disagreement-aware scoring to balance group preferences.
 
-   ![Disagreement-Aware Recommendations](images/F.png)
+   ![Disagreement-Aware Recommendations](./app/images//F.png)
 
 ---
 
