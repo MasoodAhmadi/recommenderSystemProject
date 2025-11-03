@@ -185,7 +185,7 @@
                 <thead>
                     <tr>
                         <th>User</th>
-                        <th>Movie ID</th>
+                        <th>Movie Name</th>
                         <th>Predicted Rating</th>
                         <th>Most Similar User</th>
                         <th>Similarity</th>
@@ -195,7 +195,7 @@
                     {% for p in predictions %}
                     <tr>
                         <td>{{ p.userId }}</td>
-                        <td>{{ p.movieId }}</td>
+                        <td>{{ p.movieName }}</td>
                         <td>{{ p.predicted_rating }}</td>
                         <td>{{ p.similar_user }}</td>
                         <td>{{ p.similarity }}</td>
