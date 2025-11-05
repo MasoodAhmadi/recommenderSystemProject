@@ -143,26 +143,41 @@
             {% if data %}
             <table>
                 <thead>
-                    <tr>{% for key in data[0].keys() %}<th>{{ key }}</th>{% endfor %}</tr>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Movie Name</th>
+                        <th>Movie ID</th>
+                        <th>Rating</th>
+                        <th>Timestamp</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for row in data %}
-                    <tr>{% for value in row.values() %}<td>{{ value }}</td>{% endfor %}</tr>
+                    <tr>
+                        <td>{{ row.userId }}</td>
+                        <td>{{ row.movieName }}</td>
+                        <td>{{ row.movieId }}</td>
+                        <td>{{ row.rating }}</td>
+                        <td>{{ row.timestamp }}</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
 
             <!-- Pagination -->
             <div style="margin-top:10px;text-align:center;">
-                {% if page>1 %}
+                {% if page > 1 %}
                 <a href="?page={{ page-1 }}&per_page={{ per_page }}">Previous</a>
                 {% endif %}
                 <span> Page {{ page }} of {{ total_pages }} </span>
-                {% if page<total_pages %} <a href="?page={{ page+1 }}&per_page={{ per_page }}">Next</a>
+                {% if page < total_pages %} <a href="?page={{ page+1 }}&per_page={{ per_page }}">Next</a>
                     {% endif %}
             </div>
+            {% else %}
+            <p style="color:red;">No data available.</p>
             {% endif %}
         </div>
+
 
         <!-- TAB 1: User-Based CF -->
 
@@ -261,7 +276,6 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Movie ID</th>
                         <th>Movie Name</th>
                         <th>Average Predicted Rating</th>
                     </tr>
@@ -269,7 +283,6 @@
                 <tbody>
                     {% for rec in top_avg_recs %}
                     <tr>
-                        <td>{{ rec.movieId }}</td>
                         <td>{{ rec.movieName }}</td>
                         <td>{{ rec.predicted_rating|round(2) }}</td>
                     </tr>
@@ -285,7 +298,6 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Movie ID</th>
                         <th>Movie Name</th>
                         <th>Least Misery Rating</th>
                     </tr>
@@ -293,7 +305,6 @@
                 <tbody>
                     {% for rec in top_misery_recs %}
                     <tr>
-                        <td>{{ rec.movieId }}</td>
                         <td>{{ rec.movieName }}</td>
                         <td>{{ rec.predicted_rating|round(2) }}</td>
                     </tr>

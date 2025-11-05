@@ -18,6 +18,10 @@ def index():
     movies["movieId"] = movies["movieId"].astype(int)
     movie_map = dict(zip(movies["movieId"], movies["title"]))
 
+    # ---------- Merge ratings with movies ----------
+    ratings = ratings.merge(movies[["movieId", "title"]], on="movieId", how="left")
+    ratings.rename(columns={"title": "movieName"}, inplace=True)
+
     # ---------- Dataset tab pagination ----------
     page = int(request.args.get("page", 1))
     per_page = int(request.args.get("per_page", 100))
