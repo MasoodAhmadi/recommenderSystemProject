@@ -249,60 +249,6 @@
             {% endif %}
         </div>
 
-
-
-
-        <!-- TAB 3: Extra -->
-        <!-- TAB 3: Group Recommendations -->
-        <div id="tab3" class="tab-content">
-            <h2>Group Recommendations</h2>
-            <p><strong>Group members:</strong> First 5 users in the dataset</p>
-
-            <h3>Average Method (Equal Weight)</h3>
-            {% if top_avg_recs %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Movie ID</th>
-                        <th>Group Rating (Average)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for rec in top_avg_recs %}
-                    <tr>
-                        <td>{{ rec.movieId }}</td>
-                        <td>{{ rec.predicted_rating|round(2) }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p style="color:red;">No group recommendations (average method).</p>
-            {% endif %}
-
-            <h3>Least Misery Method (Veto)</h3>
-            {% if top_misery_recs %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Movie ID</th>
-                        <th>Group Rating (Least Misery)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for rec in top_misery_recs %}
-                    <tr>
-                        <td>{{ rec.movieId }}</td>
-                        <td>{{ rec.predicted_rating|round(2) }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p style="color:red;">No group recommendations (least misery method).</p>
-            {% endif %}
-        </div>
-
         <!-- TAB 3: Group Recommendations -->
         <div id="tab3" class="tab-content">
             <h2>Group Recommendations</h2>
@@ -316,6 +262,7 @@
                 <thead>
                     <tr>
                         <th>Movie ID</th>
+                        <th>Movie Name</th>
                         <th>Average Predicted Rating</th>
                     </tr>
                 </thead>
@@ -323,6 +270,7 @@
                     {% for rec in top_avg_recs %}
                     <tr>
                         <td>{{ rec.movieId }}</td>
+                        <td>{{ rec.movieName }}</td>
                         <td>{{ rec.predicted_rating|round(2) }}</td>
                     </tr>
                     {% endfor %}
@@ -338,6 +286,7 @@
                 <thead>
                     <tr>
                         <th>Movie ID</th>
+                        <th>Movie Name</th>
                         <th>Least Misery Rating</th>
                     </tr>
                 </thead>
@@ -345,6 +294,7 @@
                     {% for rec in top_misery_recs %}
                     <tr>
                         <td>{{ rec.movieId }}</td>
+                        <td>{{ rec.movieName }}</td>
                         <td>{{ rec.predicted_rating|round(2) }}</td>
                     </tr>
                     {% endfor %}
@@ -354,6 +304,7 @@
             <p style="color:red;">No group recommendations (least misery method).</p>
             {% endif %}
         </div>
+
 
         <div id="tab4" class="tab-content">
             <h2>Disagreement-Aware Group Recommendations</h2>
