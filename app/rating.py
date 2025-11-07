@@ -94,7 +94,7 @@ def index():
     predictions_page = all_predictions[(cf_page - 1) * cf_per_page : cf_page * cf_per_page]
 
     # ---------- User Similarity Matrix for Tab 2 ----------
-    top_users = users[:20]
+    top_users = users[:5]
     similarity_matrix = pd.DataFrame(index=top_users, columns=top_users, dtype=float)
     for u1 in top_users:
         for u2 in top_users:
@@ -146,6 +146,11 @@ def index():
 
     print("Sample Average Group Recommendations:")
     print(avg_group_recs.head(5))
+
+    movie_id = 6
+    count = ratings[ratings["movieId"] == movie_id]["rating"].count()
+
+    print(f"Movie ID {movie_id} has been rated {count} times.")
 
     return render_template(
         "index.html",
