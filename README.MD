@@ -28,6 +28,7 @@ cd recommenderSystem
    View and explore the MovieLens dataset with pagination support.
 
    ![Dataset Viewer](./app/images/A1.png)
+---
    ![Dataset Viewer](./app/images/A2.png)
 
 2. **User-Based Collaborative Filtering**  
