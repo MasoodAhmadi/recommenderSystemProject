@@ -5,9 +5,9 @@ import numpy as np
 from flask import Blueprint, render_template, request
 from app.utils import pearson_similarity, cosine_similarity
 
-main_bp = Blueprint("main", __name__)
+# main_bp = Blueprint("main", __name__)
 
-@main_bp.route("/", methods=["GET", "POST"])
+# @main_bp.route("/part1", methods=["GET", "POST"])
 def index():
     # ---------- Load dataset ----------
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "app", "data", "smallest-100k"))
