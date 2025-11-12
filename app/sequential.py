@@ -1,8 +1,8 @@
-# sequential.py
+import os
 import pandas as pd
 from flask import render_template
 
-# Simple implementations of defaultdict and Counter using standard dict
+# Simple defaultdict and Counter replacements
 class Counter(dict):
     def __missing__(self, key):
         return 0
@@ -22,7 +22,7 @@ def build_transitions(df):
     for uid, group in df.groupby('user_id'):
         seq = list(group.sort_values('timestamp')['item_id'])
         for i in range(len(seq)-1):
-            a = seq[i]; b = seq[i+1]
+            a, b = seq[i], seq[i+1]
             transitions[a][b] += 1
     # normalize
     P = {}
@@ -30,7 +30,6 @@ def build_transitions(df):
         total = float(sum(ctr.values())) + 1e-8
         P[a] = {b: cnt/total for b, cnt in ctr.items()}
     return P
-
 
 def user_scores_from_lastk(last_k_items, P, decay=0.7):
     scores = {}
@@ -41,7 +40,6 @@ def user_scores_from_lastk(last_k_items, P, decay=0.7):
                 scores[j] = scores.get(j, 0) + w * p
     return scores
 
-
 def aggregate_group_scores(member_scores, agg='avg', member_weights=None):
     items = set().union(*[set(s.keys()) for s in member_scores]) if member_scores else set()
     if member_weights is None:
@@ -49,26 +47,25 @@ def aggregate_group_scores(member_scores, agg='avg', member_weights=None):
     total_w = sum(member_weights) if member_weights else 1.0
     agg_scores = {}
     for it in items:
-        vals = [s.get(it,0.0) for s in member_scores]
-        if agg=='avg':
+        vals = [s.get(it, 0.0) for s in member_scores]
+        if agg == 'avg':
             agg_scores[it] = sum(w*v for w,v in zip(member_weights, vals)) / total_w
-        elif agg in ('min','least_misery'):
+        elif agg in ('min', 'least_misery'):
             agg_scores[it] = min(vals)
-        elif agg in ('max','dictator'):
+        elif agg in ('max', 'dictator'):
             agg_scores[it] = max(vals)
-        elif agg=='median':
+        elif agg == 'median':
             agg_scores[it] = sorted(vals)[len(vals)//2]
         else:
             agg_scores[it] = sum(vals)/len(vals)
     return agg_scores
 
-
 def recommend_for_group(group_member_ids, df, P, last_k=3, decay=0.7, agg='avg', topk=10, exclude_seen=True):
     member_scores = []
     member_weights = []
     for uid in group_member_ids:
-        his = df[df.user_id==uid].sort_values('timestamp')['item_id'].tolist()
-        lastk = his[-last_k:][::-1] if len(his)>0 else []
+        his = df[df.user_id == uid].sort_values('timestamp')['item_id'].tolist()
+        lastk = his[-last_k:][::-1] if len(his) > 0 else []
         s = user_scores_from_lastk(lastk, P, decay=decay)
         member_scores.append(s)
         member_weights.append(1.0)
@@ -81,10 +78,40 @@ def recommend_for_group(group_member_ids, df, P, last_k=3, decay=0.7, agg='avg',
     ranked = sorted(agg_scores.items(), key=lambda x: x[1], reverse=True)
     return ranked[:topk]
 
+# ------------------- Main Function -------------------
+def sequential():
+    """Load dataset, compute sequential group recommendations with movie names, and render them."""
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "data", "smallest-100k"))
+    ratings_file = os.path.join(base_dir, "ratings.csv")
+    movies_file = os.path.join(base_dir, "movies.csv")
 
-def sequential(df):
-    """Generate group sequential recommendations and render them in sequential.html."""
-    group = df['user_id'].unique()[:3].tolist()  # pick first 3 users from dataset
+    if not os.path.exists(ratings_file):
+        return f"<h3>Ratings dataset not found at: {ratings_file}</h3>"
+    if not os.path.exists(movies_file):
+        return f"<h3>Movies dataset not found at: {movies_file}</h3>"
+
+    df = pd.read_csv(ratings_file) 
+    df = df.rename(columns={'userId': 'user_id', 'movieId': 'item_id'})
+    df['user_id'] = df['user_id'].astype(int)
+    df['item_id'] = df['item_id'].astype(int)
+    df = df.sort_values(['user_id', 'timestamp'])
+
+    movies_df = pd.read_csv(movies_file)
+    movies_df['movieId'] = movies_df['movieId'].astype(int)
+    movies_dict = dict(zip(movies_df['movieId'], movies_df['title']))
+
+    group = df['user_id'].unique()[:3].tolist()
+
     P = build_transitions(df)
+
     recs = recommend_for_group(group, df, P, last_k=3, decay=0.7, agg='avg', topk=10, exclude_seen=False)
-    return render_template('sequential.html', recommendations=recs)
+
+    recs_with_titles = [
+        (item_id, movies_dict.get(item_id, f"Movie {item_id}"), score)
+        for item_id, score in recs
+    ]
+
+    if not recs_with_titles:
+        recs_with_titles = [(0, "No recommendations available", 0)]
+
+    return render_template('sequential.html', recommendations=recs_with_titles)

@@ -9,8 +9,8 @@
     <h1>Sequential Group Recommendations</h1>
     <ul>
         {% if recommendations %}
-        {% for item, score in recommendations %}
-        <li>Item ID: {{ item }}, Score: {{ score }}</li>
+        {% for item_id, title, score in recommendations %}
+        <li>Movie ID: {{ item_id }}, Title: {{ title }}, Score: {{ score }}</li>
         {% endfor %}
         {% else %}
         <li>No recommendations available.</li>
