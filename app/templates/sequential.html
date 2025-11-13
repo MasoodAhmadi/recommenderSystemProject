@@ -1,22 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sequential Group Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #0078D7;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9f2ff;
+        }
+
+        .no-data {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 18px;
+            color: #777;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Sequential Group Recommendations</h1>
-    <ul>
-        {% if recommendations %}
-        {% for item_id, title, score in recommendations %}
-        <li>Movie ID: {{ item_id }}, Title: {{ title }}, Score: {{ score }}</li>
-        {% endfor %}
-        {% else %}
-        <li>No recommendations available.</li>
-        {% endif %}
-    </ul>
+    <h1>Sequential Group Movie Recommendations</h1>
 
+    {% if recommendations %}
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Movie ID</th>
+                <th>Movie Title</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item_id, title, score in recommendations %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item_id }}</td>
+                <td>{{ title }}</td>
+                <td>{{ "%.4f"|format(score) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="no-data">No recommendations available.</div>
+    {% endif %}
 </body>
 
 </html>
