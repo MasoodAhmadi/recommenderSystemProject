@@ -3,6 +3,7 @@ import os
 from flask import Blueprint
 from app.rating import index
 from app.sequential import sequential
+from app.diversity import show_diversity
 
 # Create blueprint
 main_bp = Blueprint("main", __name__)
@@ -15,3 +16,7 @@ def part1():
 @main_bp.route("/part2", methods=["GET", "POST"])
 def part2():
     return sequential()
+
+@main_bp.route("/part3", methods=["GET", "POST"])
+def part3():
+    return show_diversity()
