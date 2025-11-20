@@ -62,7 +62,7 @@ def group_relevance(movie_vec):
     return np.mean([np.dot(pref, movie_vec) for pref in user_prefs.values()])
 
 
-def item_distance(v1, v2):
+def dissimilarity (v1, v2):
     return max(0, 1 - np.dot(v1, v2))
 
 
@@ -103,7 +103,7 @@ def diversity(candidates, k=10, alpha=0.5, beta=0.3, gamma=0.2):
             if len(selected_vecs) == 0:
                 diversity_score = 1.0
             else:
-                diversity_score = min(item_distance(vec, s) for s in selected_vecs)
+                diversity_score = min(dissimilarity (vec, s) for s in selected_vecs)
             diversity_score = np.clip(diversity_score, 0, 1)
 
             cov = coverage_gain(vec, selected_vecs) / num_genres
@@ -137,7 +137,7 @@ def intra_list_diversity(df):
     pairs = 0
     for i in range(len(vecs)):
         for j in range(i + 1, len(vecs)):
-            d_sum += item_distance(vecs[i], vecs[j])
+            d_sum += dissimilarity (vecs[i], vecs[j])
             pairs += 1
     return float(d_sum / pairs)
 
