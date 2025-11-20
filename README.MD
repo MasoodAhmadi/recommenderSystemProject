@@ -1,6 +1,6 @@
 ## 📦 Recommender System Project
 
-This project implements a Sequential Group Recommendation System using Markov Chains.
+This project implements a Sequential Group Recommendation System using Markov Chains..
 
 🔗 **GitHub Repository:** [recommenderSystemProject](https://github.com/MasoodAhmadi/recommenderSystemProject)
 
