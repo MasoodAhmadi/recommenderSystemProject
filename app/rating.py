@@ -153,7 +153,7 @@ def index():
     print(f"Movie ID {movie_id} has been rated {count} times.")
 
     return render_template(
-        "index.html",
+        "rating.html",
         row_count=row_count,
         data=dataset_page,
         page=page,

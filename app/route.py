@@ -1,12 +1,18 @@
 # app/route.py
 import os
-from flask import Blueprint
+from flask import Blueprint,render_template
 from app.rating import index
 from app.sequential import sequential
 from app.diversity import show_diversity
 
 # Create blueprint
 main_bp = Blueprint("main", __name__)
+
+
+@main_bp.route("/", methods=["GET"])
+def home():
+    return render_template("index.html")
+
 
 @main_bp.route("/part1", methods=["GET", "POST"])
 def part1():

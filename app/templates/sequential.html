@@ -52,10 +52,28 @@
             font-size: 18px;
             color: #777;
         }
+
+        button {
+            padding: 10px 20px;
+            font-size: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #cdcecf;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
 <body>
+    <button onclick="window.location.href='{{ url_for('main.home') }}'">Back to Main</button>
+    <br />
+    <br />
     <h1>Sequential Group Movie Recommendations</h1>
 
     {% if recommendations %}
