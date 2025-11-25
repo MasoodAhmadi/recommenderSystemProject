@@ -7,7 +7,7 @@ This project implements a Sequential Group Recommendation System using Markov Ch
 
 # 🎥 Recommender System Dashboard
 
-Welcome to the **Recommender System Course**! This project work part 1 is built with Flask that demonstrates various recommendation techniques, including collaborative filtering, group recommendations, and disagreement-aware methods. The system uses the MovieLens dataset to showcase its functionality.
+Welcome to the **Recommender System Course**! This project work part 1 ,part 2 and part 3 are built with Flask that demonstrates various recommendation techniques, including collaborative filtering, group recommendations, and disagreement-aware methods. The system uses the MovieLens dataset to showcase its functionality.
 
 ---
 
@@ -31,10 +31,17 @@ cd recommenderSystem
 
 ## 🌟 Features
 
+1. **Dashboard recommender system project**  
+   You can navigate in each part by clicking the buttons below: 
+    ![Dataset Viewer](./app/images/mainpage.png)
+
+## 🌟 Part1 
+  
 1. **Dataset Viewer**  
    View and explore the MovieLens dataset with pagination support.
 
-   ![Dataset Viewer](./app/images/A1.png)
+  
+   ![Dataset Viewer](./app/images/A1.png) 
 ---
    ![Dataset Viewer](./app/images/A2.png)
 
@@ -58,3 +65,15 @@ cd recommenderSystem
 
    ![Disagreement-Aware Recommendations](./app/images//F.png)
 
+
+## 🌟 Part2
+
+1. **Sequential Group Recommendations**  
+   
+   ![Sequential Group Recommendations*](./app/images//part2.png)
+
+## 🌟 Part3
+
+1. **Diverse Recommendations**  
+   
+   ![Diverse Recommendationss](./app/images//part3.png)
