@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 4 - Recommender Systems</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px;
+            background-color: #f7f9fc;
+            color: #222;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            padding: 24px 32px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            margin-top: 24px;
+        }
+
+        h1 {
+            margin: 0 0 12px 0;
+            text-align: center;
+        }
+
+        p.description {
+            color: #444;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form.controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"], select {
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            min-width: 220px;
+            font-size: 16px;
+        }
+
+        button.action {
+            padding: 12px 20px;
+            border: none;
+            background: #007BFF;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button.action:hover { background:#0056b3 }
+
+        .results {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #fbfdff;
+            border: 1px solid #eef4ff;
+        }
+
+        .nav-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .nav-row button {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid #d6dfe9;
+            background: white;
+            cursor: pointer;
+        }
+
+        .note { font-size: 14px; color:#666; text-align:center; margin-top:12px }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Part 4</h1>
+        <p class="description">This page is the Part 4 interface for the Recommender Systems project. Use the controls below to run Part 4 experiments or display results.</p>
+
+        <form class="controls" method="post" action="{{ url_for('main.part4') }}">
+            <input type="text" name="query" placeholder="Enter item or user id" />
+            <select name="mode">
+                <option value="score">Get Scores</option>
+                <option value="explain">Explain Recommendation</option>
+                <option value="diversity">Diversity Metrics</option>
+            </select>
+            <button type="submit" class="action">Run</button>
+        </form>
+
+        <div class="results">
+            {% if result is defined %}
+            <h3>Results</h3>
+            <pre>{{ result }}</pre>
+            {% else %}
+            <p class="note">No results yet. Submit the form to run Part 4.</p>
+            {% endif %}
+        </div>
+
+        <div class="nav-row">
+            <button onclick="window.location.href='{{ url_for('main.index') }}'">Home</button>
+            <button onclick="window.location.href='{{ url_for('main.part1') }}'">Part 1</button>
+            <button onclick="window.location.href='{{ url_for('main.part2') }}'">Part 2</button>
+            <button onclick="window.location.href='{{ url_for('main.part3') }}'">Part 3</button>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Group Counterfactual Explanations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            margin: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+
+        h2 {
+            color: #444;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .bullet {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Counterfactual Explanations for Group Recommendations</h1>
+
+    {% for item in results %}
+    <div class="section">
+        <h2>Rank {{ item.rank }} – {{ item.item }}</h2>
+
+        <table>
+            <tr>
+                <th>Recommended Movie</th>
+                <th>Counterfactual (Removed Items)</th>
+                <th>Fairness</th>
+                <th>Popularity</th>
+            </tr>
+            <tr>
+                <td>{{ item.item }}</td>
+                <td>
+                    {% for r in item.removed_items %}
+                    {{ r }}<br>
+                    {% endfor %}
+                </td>
+                <td>{{ item.fairness }}</td>
+                <td>{{ item.popularity }}</td>
+            </tr>
+        </table>
+
+        <h3>Explanation</h3>
+        <ul>
+            {% for bp in item.bullet_points %}
+            <li class="bullet">{{ bp }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+
+</body>
+
+</html>
