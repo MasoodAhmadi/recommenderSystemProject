@@ -15,6 +15,8 @@ Welcome to the **Recommender System Course**! This project work part 1 ,part 2 a
 
 Follow these steps to set up the project on your local machine:
 
+Note: you can find requirements.txt file or install the library by your own devices. 
+
 Make sure you are in the root folder of the project (where app.py is located), then start the Flask application using the following command:
 
 ```bash
@@ -77,3 +79,7 @@ cd recommenderSystem
 1. **Diverse Recommendations**  
    
    ![Diverse Recommendationss](./app/images//part3.png)
+
+1. **Counterfactual Explanation**  
+   
+   ![Counterfactual Explanation](./app/images//part4.png)
